@@ -3,10 +3,7 @@ package com.saeedmaldosary.springmaster;
 import jakarta.websocket.server.PathParam;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -66,6 +63,11 @@ public class SpringMasterApplication {
 	public Optional<Person> getPersonById(@PathVariable("id") Integer id){
 
 		return people.stream().filter(person -> person.id == id).findFirst();
+	}
+
+	@DeleteMapping("{id}")
+	public void deletePersonById(@PathVariable("id") Integer id){
+		people.removeIf(person -> person.id == id);
 	}
 
 }
