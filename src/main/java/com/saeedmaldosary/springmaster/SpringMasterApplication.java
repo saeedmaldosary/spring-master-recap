@@ -1,5 +1,7 @@
 package com.saeedmaldosary.springmaster;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.websocket.server.PathParam;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,7 +29,8 @@ public class SpringMasterApplication {
 
 	public enum SortingOrder {ASC,DESC}
 
-	public record Person(Integer id,String name, Integer age, Gender gender) {
+	public record Person(Integer id, @JsonGetter("fullName") String name, Integer age,
+						 @JsonIgnore Gender gender) {
 
 	}
 
