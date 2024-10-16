@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,9 +31,11 @@ public class SpringMasterApplication {
 
 	public static List<Person> people = new ArrayList<>();
 
+	private static AtomicInteger idCounter = new AtomicInteger(0);
+
 	static {
-		people.add(new Person(1,"John",20,Gender.MALE));
-		people.add(new Person(2,"John",22,Gender.MALE));
+		people.add(new Person(idCounter.incrementAndGet(),"John",20,Gender.MALE));
+		people.add(new Person(idCounter.incrementAndGet(),"Saeed",22,Gender.MALE));
 	}
 
 	@GetMapping
@@ -68,6 +71,11 @@ public class SpringMasterApplication {
 	@DeleteMapping("{id}")
 	public void deletePersonById(@PathVariable("id") Integer id){
 		people.removeIf(person -> person.id == id);
+	}
+
+	@PostMapping
+	public void addPerson(@RequestBody Person person){
+		people.add(new Person(idCounter.incrementAndGet(),person.name,person.age,person.gender));
 	}
 
 }
