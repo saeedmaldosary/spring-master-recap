@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
+@RequestMapping("api/v1/person")
 @SpringBootApplication
 public class SpringMasterApplication {
 
