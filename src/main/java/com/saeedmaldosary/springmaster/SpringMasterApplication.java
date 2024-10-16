@@ -3,6 +3,7 @@ package com.saeedmaldosary.springmaster;
 import jakarta.websocket.server.PathParam;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class SpringMasterApplication {
 		people.add(new Person(idCounter.incrementAndGet(),"Saeed",22,Gender.MALE));
 	}
 
-	@GetMapping
+	@GetMapping("/")
 	public List<Person> getPersons(@RequestParam(value = "sort",required = false,defaultValue = "DESC")
 										 SortingOrder sort
 	,@RequestParam(value = "limit",required = false,defaultValue = "10")Integer limit){
@@ -68,9 +69,10 @@ public class SpringMasterApplication {
 	example: http://localhost:8080/1?sort=asc
 	*/
 	@GetMapping("{id}")
-	public Optional<Person> getPersonById(@PathVariable("id") Integer id){
+	public ResponseEntity<Optional<Person>> getPersonById(@PathVariable("id") Integer id){
 
-		return people.stream().filter(person -> person.id.equals(id)).findFirst();
+		Optional<Person> person = people.stream().filter(p -> p.id.equals(id)).findFirst();
+		return ResponseEntity.status(200).body(person);
 	}
 
 	@DeleteMapping("{id}")
