@@ -25,7 +25,11 @@ public class SpringMasterApplication {
 
 	public enum SortingOrder {ASC,DESC}
 
-	public record Person(int id,String name, int age, Gender gender) {
+	public record Person(Integer id,String name, Integer age, Gender gender) {
+
+	}
+
+	public record UpdatePerson(String name, int age) {
 
 	}
 
@@ -65,17 +69,35 @@ public class SpringMasterApplication {
 	@GetMapping("{id}")
 	public Optional<Person> getPersonById(@PathVariable("id") Integer id){
 
-		return people.stream().filter(person -> person.id == id).findFirst();
+		return people.stream().filter(person -> person.id.equals(id)).findFirst();
 	}
 
 	@DeleteMapping("{id}")
 	public void deletePersonById(@PathVariable("id") Integer id){
-		people.removeIf(person -> person.id == id);
+		people.removeIf(person -> person.id.equals(id));
 	}
 
 	@PostMapping
 	public void addPerson(@RequestBody Person person){
 		people.add(new Person(idCounter.incrementAndGet(),person.name,person.age,person.gender));
+	}
+
+	@PutMapping("{id}")
+	public void updatePersonById(@PathVariable Integer id,@RequestBody UpdatePerson request) {
+		people.stream().filter(p -> p.id.equals(id)).findFirst().ifPresent(p -> {
+					var index = people.indexOf(p);
+					if (request.name != null && !request.name.isEmpty() && !request.name.equals(p.name)) {
+						Person person = new Person(
+								p.id,
+								request.name,
+								p.age(),
+								p.gender()
+						);
+						people.set(index, person);
+
+					}
+				}
+		);
 	}
 
 }
