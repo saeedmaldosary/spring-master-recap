@@ -15,11 +15,14 @@ public class LoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        request.getHeaderNames().asIterator().forEachRemaining(n-> System.out.println(n + ": " + request.getHeader(n)));
-        if(request.getHeader("UserRole").equals("Reader")) {
+        request.getHeaderNames().asIterator().forEachRemaining(n -> System.out.println(n + ": " + request.getHeader(n)));
+        String userRole = request.getHeader("UserRole");
+        if (userRole != null && userRole.equals("Reader")) {
             HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
-            httpServletResponse.sendError(405);
+            httpServletResponse.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            return;
         }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 }

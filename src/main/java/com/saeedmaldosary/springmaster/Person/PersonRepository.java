@@ -1,9 +1,12 @@
 package com.saeedmaldosary.springmaster.Person;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@Repository
 public class PersonRepository {
 
     private final AtomicInteger idCounter = new AtomicInteger(0);
