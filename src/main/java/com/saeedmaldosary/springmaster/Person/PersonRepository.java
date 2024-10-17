@@ -10,7 +10,7 @@ public class PersonRepository {
 
     private final List<Person> people = new ArrayList<>();
 
-    static {
+    {
         people.add(new Person(idCounter.incrementAndGet(),"John",20,Gender.MALE));
         people.add(new Person(idCounter.incrementAndGet(),"Saeed",22,Gender.MALE));
     }
