@@ -51,7 +51,10 @@ public class PersonService {
         personRepository.getPeople().removeIf(person -> person.id().equals(id));
     }
 
-    public void addPerson(Person person){
+    public void addPerson(NewPersonRequest person){
+        System.out.println("====================");
+        System.out.println(person.gender());
+        System.out.println("====================");
         personRepository.getPeople().add(new Person(personRepository.getIdCounter().incrementAndGet(),person.name(),person.age(),person.gender()));
     }
 

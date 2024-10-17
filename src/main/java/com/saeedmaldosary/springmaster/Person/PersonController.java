@@ -1,6 +1,8 @@
 package com.saeedmaldosary.springmaster.Person;
 
 import com.saeedmaldosary.springmaster.SortingOrder;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,13 +43,17 @@ public class PersonController {
     }
 
     @DeleteMapping("{id}")
-    public void deletePersonById(@PathVariable("id") Integer id){
+    public void deletePersonById(@Valid @Positive @PathVariable("id") Integer id){
 
         personService.deletePersonById(id);
     }
 
     @PostMapping
-    public void addPerson(@RequestBody Person person){
+    public void addPerson(@Valid @RequestBody NewPersonRequest person){
+        System.out.println("====================");
+        System.out.println(person.gender());
+        System.out.println(person);
+        System.out.println("====================");
         personService.addPerson(person);
     }
 
