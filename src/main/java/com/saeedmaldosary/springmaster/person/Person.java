@@ -1,4 +1,4 @@
-package com.saeedmaldosary.springmaster.Person;
+package com.saeedmaldosary.springmaster.person;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;

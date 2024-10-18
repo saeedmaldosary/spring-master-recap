@@ -1,11 +1,11 @@
-package com.saeedmaldosary.springmaster.Person;
+package com.saeedmaldosary.springmaster.person;
 
 import com.saeedmaldosary.springmaster.SortingOrder;
+import com.saeedmaldosary.springmaster.exception.ResourcesNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,9 +41,9 @@ public class PersonService {
 	We can filter the data using @RequestParam
 	example: http://localhost:8080/1?sort=asc
 	*/
-    public Optional<Person> getPersonById(Integer id){
+    public Person getPersonById(Integer id){
 
-        return personRepository.getPeople().stream().filter(p -> p.id().equals(id)).findFirst();
+        return personRepository.getPeople().stream().filter(p -> p.id().equals(id)).findFirst().orElseThrow(() -> new ResourcesNotFoundException("Id not exist"));
 
     }
 

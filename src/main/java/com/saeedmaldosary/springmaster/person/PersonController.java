@@ -1,4 +1,4 @@
-package com.saeedmaldosary.springmaster.Person;
+package com.saeedmaldosary.springmaster.person;
 
 import com.saeedmaldosary.springmaster.SortingOrder;
 import jakarta.validation.Valid;
@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/persons")
@@ -36,9 +35,9 @@ public class PersonController {
 	example: http://localhost:8080/1?sort=asc
 	*/
     @GetMapping("{id}")
-    public ResponseEntity<Optional<Person>> getPersonById(@PathVariable("id") Integer id){
+    public ResponseEntity<Person> getPersonById(@PathVariable("id") Integer id){
 
-        Optional<Person> person = personService.getPersonById(id);
+        Person person = personService.getPersonById(id);
         return ResponseEntity.status(200).body(person);
     }
 

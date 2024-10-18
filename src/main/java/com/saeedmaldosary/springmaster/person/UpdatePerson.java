@@ -1,4 +1,4 @@
-package com.saeedmaldosary.springmaster.Person;
+package com.saeedmaldosary.springmaster.person;
 
 public record UpdatePerson(String name, int age) {
 
