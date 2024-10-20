@@ -1,7 +1,9 @@
 package com.saeedmaldosary.springmaster.person;
 
 import com.saeedmaldosary.springmaster.SortingOrder;
-import com.saeedmaldosary.springmaster.exception.ResourcesNotFoundException;
+import com.saeedmaldosary.springmaster.exception.DuplicateResourceException;
+import com.saeedmaldosary.springmaster.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -12,67 +14,89 @@ import java.util.stream.Stream;
 @Service
 public class PersonService {
 
-
+    private final FakePersonRepository fakePersonRepository;
     private final PersonRepository personRepository;
 
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(FakePersonRepository fakePersonRepository,
+                         PersonRepository personRepository) {
+        this.fakePersonRepository = fakePersonRepository;
         this.personRepository = personRepository;
     }
 
-    public List<Person> getPersons(SortingOrder sort
-            , Integer limit){
-
-        Stream<Person> sortedStream;
-
-        if(sort == SortingOrder.ASC){
-            sortedStream =  personRepository.getPeople().stream().sorted(Comparator.comparing(Person::id));
-        } else {
-            sortedStream = personRepository.getPeople().stream().sorted(Comparator.comparing(Person::id).reversed());
-        }
-        return sortedStream.limit((limit)).collect(Collectors.toList());
-    }
-
-    /*
-    In the context of Java (which this code appears to be),
-    Optional is a container object introduced in Java 8.
-     It's used to represent a value that may or may not be present.
-    */
-	/*
-	We can filter the data using @RequestParam
-	example: http://localhost:8080/1?sort=asc
-	*/
-    public Person getPersonById(Integer id){
-
-        return personRepository.getPeople().stream().filter(p -> p.id().equals(id)).findFirst().orElseThrow(() -> new ResourcesNotFoundException("Id not exist"));
-
-    }
-
-    public void deletePersonById(Integer id){
-        personRepository.getPeople().removeIf(person -> person.id().equals(id));
-    }
-
-    public void addPerson(NewPersonRequest person){
-        System.out.println("====================");
-        System.out.println(person.gender());
-        System.out.println("====================");
-        personRepository.getPeople().add(new Person(personRepository.getIdCounter().incrementAndGet(),person.name(),person.age(),person.gender()));
-    }
-
-    public void updatePersonById(Integer id,UpdatePerson request) {
-        personRepository.getPeople().stream().filter(p -> p.id().equals(id)).findFirst().ifPresent(p -> {
-                    var index = personRepository.getPeople().indexOf(p);
-                    if (request.name() != null && !request.name().isEmpty() && !request.name().equals(p.name())) {
-                        Person person = new Person(
-                                p.id(),
-                                request.name(),
-                                p.age(),
-                                p.gender()
-                        );
-                        personRepository.getPeople().set(index, person);
-
-                    }
-                }
+    public List<Person> getPeople(
+            SortingOrder sort
+    ) {
+        return personRepository.findAll(
+                Sort.by(
+                        Sort.Direction.valueOf(sort.name()),
+                        "id"
+                )
         );
+    }
+
+    public Person getPersonById(Integer id) {
+        return personRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Person with id: " + id + " does not exists"));
+
+    }
+
+    public void deletePersonById(Integer id) {
+        boolean existsById = personRepository.existsById(id);
+        if (!existsById) {
+            throw new ResourceNotFoundException(
+                    "Person with id: " + id + " does not exists"
+            );
+        }
+        personRepository.deleteById(id);
+    }
+
+    public void addPerson(NewPersonRequest personRequest) {
+        if(personRequest.email() != null && !personRequest.email().isEmpty()) {
+            boolean exists = personRepository.existsByEmail(personRequest.email());
+            if (exists) {
+                throw new DuplicateResourceException("email taken");
+            }
+        }
+
+        Person person = new Person(
+                personRequest.name(),
+                personRequest.age(),
+                personRequest.gender(),
+                personRequest.email()
+        );
+
+        personRepository.save(person);
+
+    }
+
+    public void updatePerson(Integer id,
+                             PersonUpdateRequest request) {
+        Person person = personRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Person with id: " + id + " does not exists")
+                );
+
+        if (request.name() != null &&
+                !request.name().isEmpty() &&
+                !request.name().equals(person.getName())) {
+            person.setName(request.name());
+            personRepository.save(person);
+        }
+        if (request.email() != null &&
+                !request.email().isEmpty() &&
+                !request.email().equals(person.getEmail())) {
+            person.setEmail(request.email());
+            personRepository.save(person);
+        }
+        if (request.age() != null
+                && !request.age().equals(person.getAge())) {
+            person.setAge(request.age());
+            personRepository.save(person);
+        }
+
     }
 
 }
